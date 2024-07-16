@@ -1,35 +1,39 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { ChangeEvent, useState, useCallback } from "react"
+import styled from "styled-components"
+import { MemoList } from "./components/MemoList"
+import { useMemoList } from "./hooks/useMemoList"
 
 function App() {
-  const [count, setCount] = useState(0)
+  const { memos, addTodo, deleteTodo } = useMemoList()
+  const [text, setText] = useState<string>("")
+  const onChangeText = (e: ChangeEvent<HTMLInputElement>) => setText(e.target.value)
 
+  const onClickAdd = () => {
+    addTodo(text)
+    setText("")
+  }
+
+  const onClickDelete = useCallback(
+    (index: number) => {
+      deleteTodo(index)
+    },
+    [deleteTodo]
+  )
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div>
+      <h1>簡単メモアプリ</h1>
+      <input type='text' value={text} onChange={onChangeText} />
+      <SButton onClick={onClickAdd} disabled={text.length === 0}>
+        {" "}
+        追加{" "}
+      </SButton>
+      <MemoList memos={memos} onClickDelete={onClickDelete} />
+    </div>
   )
 }
+
+const SButton = styled.button`
+  magin-left: 16px;
+`
 
 export default App
